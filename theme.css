@@ -1,147 +1,333 @@
-/* =============================================================================
-   iOS 26 Design System — Theme Tokens
-   Source of truth for all design values. Reference via var(--token-name).
-   ============================================================================= */
+@custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Typography font sizes */
+  --text-h1: 34px;
+  --text-h2: 28px;
+  --text-h3: 22px;
+  --text-h4: 20px;
+  --text-base: 17px;
+  --text-label: 15px;
 
-  /* ---------------------------------------------------------------------------
-     BRAND / PRIMARY COLORS
-  --------------------------------------------------------------------------- */
-  --primary:            #295EFF;
-  --primary-hover:      #2049C6;
-  --primary-pressed:    #152F80;
-  --primary-foreground: #FFFFFF;
+  --font-family: "Libre Franklin", sans-serif;
 
-  /* ---------------------------------------------------------------------------
-     SEMANTIC COLORS
-  --------------------------------------------------------------------------- */
-  --destructive:          #BF2310;
-  --destructive-foreground: #FFFFFF;
-  --destructive-subtle:   rgba(191, 35, 16, 0.10);
-
-  --success:              #0E813E;
-  --success-foreground:   #FFFFFF;
-  --success-subtle:       rgba(14, 129, 62, 0.10);
-
-  --warning:              #B45309;
-  --warning-foreground:   #FFFFFF;
-  --warning-subtle:       rgba(180, 83, 9, 0.10);
-
-  --info:                 #0284C7;
-  --info-foreground:      #FFFFFF;
-  --info-subtle:          rgba(2, 132, 199, 0.10);
-
-  /* ---------------------------------------------------------------------------
-     FOREGROUND / TEXT COLORS
-  --------------------------------------------------------------------------- */
-  --foreground:           #061223;   /* Primary text */
-  --muted-foreground:     #7189A7;   /* Disabled / secondary text */
-  --helper-foreground:    #3A495D;   /* Helper / placeholder text */
-
-  /* ---------------------------------------------------------------------------
-     BACKGROUNDS
-  --------------------------------------------------------------------------- */
-  --background:           #F2F5F8;   /* App background */
-  --card:                 #FFFFFF;   /* Card / surface */
-  --popover:              #FFFFFF;   /* Overlay / popover surface */
-  --input-background:     #FFFFFF;   /* Input field fill */
-  --muted:                #CCD5DF;   /* Disabled background / skeleton */
-  --muted-hover:          rgba(204, 213, 223, 0.50);
-
-  /* ---------------------------------------------------------------------------
-     ACCENT
-  --------------------------------------------------------------------------- */
-  --accent:               #DEE2FF;   /* Secondary button / chip highlight */
-  --accent-foreground:    #295EFF;
-
-  /* ---------------------------------------------------------------------------
-     SECONDARY BUTTON
-  --------------------------------------------------------------------------- */
-  --secondary:            transparent;
-  --secondary-foreground: #295EFF;
-  --secondary-hover:      #DEE2FF;
-
-  /* ---------------------------------------------------------------------------
-     BORDERS
-  --------------------------------------------------------------------------- */
-  --border:               rgba(6, 18, 35, 0.12);   /* Default border */
-  --border-subtle:        rgba(6, 18, 35, 0.06);   /* Subtle dividers */
-  --ring:                 #295EFF;                  /* Focus ring */
-
-  /* ---------------------------------------------------------------------------
-     TYPOGRAPHY
-  --------------------------------------------------------------------------- */
-  --font-family:          'Libre Franklin', -apple-system, BlinkMacSystemFont,
-                          'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
-  --font-weight-regular:  400;
+  /* Font weights */
+  --font-weight-regular: 400;
   --font-weight-semibold: 600;
-  --font-weight-bold:     700;
+  --font-weight-bold: 700;
 
-  /* Type scale */
-  --text-h1:    34px;   /* Large Title — prominent hero amounts, screen titles */
-  --text-h2:    28px;   /* Title 1 */
-  --text-h3:    22px;   /* Title 2 — empty state headings */
-  --text-h4:    20px;   /* Title 3 — section headers */
-  --text-base:  17px;   /* Body / default button / input text */
-  --text-sm:    15px;   /* Secondary label / helper text / links */
-  --text-label: 15px;   /* Badge / chip label */
-  --text-xs:    13px;   /* Segment labels / small metadata */
-  --text-tab:   10px;   /* Tab bar labels */
-  --text-xxs:   11px;   /* Card metadata / micro text */
+  /* The default background color for the application. */
+  --background: #f3f6f9;
+  /* The default color for elements or text that appears on top of the background. */
+  --foreground: #061223;
+  /* The background color for cards, modals, and other containers. */
+  --card: #ffffff;
+  /* The background color for cards when hovered. */
+  --card-hover: #e1e8ef;
+  /* The default color for text or elements that appear on top of cards, modals and other background containers. */
+  --card-foreground: #061223;
+  /* The background color for dropdowns and tooltips. */
+  --popover: #f7f7f7;
+  /* The default color for text or elements that appear on top of dropdowns and tooltips. */
+  --popover-foreground: #061223;
 
-  /* Line heights */
-  --leading-tight:   1.2;
-  --leading-normal:  1.5;
-  --leading-relaxed: 1.6;
+  /* The primary color used for buttons, links, and other interactive elements. */
+  --primary: #295eff;
+  /* The primary color when hovered. */
+  --primary-hover: #2049c6;
+  /* The primary color when pressed. */
+  --primary-pressed: #152f80;
+  /* The default color for text or elements that appear on top of primary colored elements. */
+  --primary-foreground: #ffffff;
 
-  /* ---------------------------------------------------------------------------
-     SPACING SCALE
-  --------------------------------------------------------------------------- */
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;   /* Card inner padding */
-  --space-5:  20px;   /* Standard component gap / padding */
-  --space-6:  24px;
-  --space-8:  32px;
-  --space-10: 40px;   /* Large component gap */
+  /* The secondary color used for secondary(but NOT-DESTRUCTIVE) buttons and interactive elements. */
+  --secondary: rgba(0, 0, 0, 0);
+  /* The background color for secondary elements when hovered. */
+  --secondary-hover: #dee2ff;
+  /* The default color for text or elements that appear on top of secondary colored elements. */
+  --secondary-foreground: #295eff;
 
-  /* ---------------------------------------------------------------------------
-     BORDER RADIUS
-  --------------------------------------------------------------------------- */
-  --radius-button: 99px;   /* Pill — buttons, chips */
-  --radius-card:   16px;   /* Cards, sheets */
-  --radius-input:  12px;   /* Input fields */
-  --radius:         8px;   /* Badges, small elements */
-  --radius-sm:      4px;   /* Tight corners */
-  --radius-sheet:  20px;   /* Bottom sheet top corners */
+  /* The muted color used for less prominent elements, such as disabled buttons or disabled text. */
+  --muted: #ccd5df;
+  /* The background color for muted elements when hovered. */
+  --muted-hover: #3a495d;
+  /* The default color for text or elements that appear on top of muted colored elements. */
+  --muted-foreground: #7189a7;
 
-  /* ---------------------------------------------------------------------------
-     ELEVATION / SHADOWS
-  --------------------------------------------------------------------------- */
-  --elevation-sm: 0 1px 3px rgba(6, 18, 35, 0.08),
-                  0 1px 2px rgba(6, 18, 35, 0.04);
-  --elevation-md: 0 4px 8px rgba(6, 18, 35, 0.10),
-                  0 2px 4px rgba(6, 18, 35, 0.06);
-  --elevation-lg: 0 12px 24px rgba(6, 18, 35, 0.12),
-                  0 4px 8px rgba(6, 18, 35, 0.06);
+  /* The accent color used for highlights, links, and other interactive elements. */
+  --accent: #dee2ff;
+  /* The default color for text or elements that appear on top of accent colored elements. */
+  --accent-foreground: #152f80;
 
-  /* ---------------------------------------------------------------------------
-     ANIMATION
-  --------------------------------------------------------------------------- */
-  --duration-micro:   150ms;                           /* Hover / focus */
-  --duration-state:   250ms;                           /* Toggle / state change */
-  --duration-spatial: 350ms;                           /* Sheet / modal transition */
-  --ease-micro:       ease-in-out;
-  --ease-state:       ease-out;
-  --ease-spatial:     cubic-bezier(0.25, 1, 0.5, 1);  /* Spring-like */
+  /* Success color used for success states and positive feedback. */
+  --success: #0e813e;
+  /* Subtle background color for success states. */
+  --success-subtle: #dbece2;
+  /* Warning color used for cautionary states and warnings. */
+  --warning: #fbc02d;
+  /* Subtle background color for warning states. */
+  --warning-subtle: #fef6df;
+  /* The color used for background in destructive actions, such as delete buttons or error messages. */
+  --destructive: #bf2310;
+  /* Subtle background color for destructive actions. */
+  --destructive-subtle: #f5dedb;
+  /* The default color for text or elements that appear on top of destructive colored elements. */
+  --destructive-foreground: #ffffff;
 
-  /* ---------------------------------------------------------------------------
-     iOS LIQUID GLASS MATERIAL
-  --------------------------------------------------------------------------- */
-  --blur-glass:           blur(25px);
-  --glass-overlay:        rgba(255, 255, 255, 0.50);
-  --glass-tint-opacity:   0.50;
+  /* The default border color for elements such as inputs, buttons, and other containers. */
+  --border: #7189a7;
+  /* A more subtle border color for less prominent containers. */
+  --border-subtle: #ccd5df;
+  /* The default background color for input fields once the text has been filled. */
+  --input: #ffffff;
+  /* The default background color for input fields, text areas, and other input elements. */
+  --input-background: #ffffff;
+  /* The color for icons or elements within an input field when hovered. */
+  --input-hover: #2049c6;
+  /* The color for focus rings, outlines, and other focus indicators. */
+  --ring: #295eff;
 
+  /* Shadow for small elevations, such as cards or modals. */
+  --elevation-sm: 0px 4px 9px 0px rgba(16, 47, 67, 0.12);
+  /* Shadow for medium elevations. */
+  --elevation-md: 0px 8px 16px 0px rgba(16, 47, 67, 0.12);
+  /* Shadow for large elevations. */
+  --elevation-lg: 0px 15px 20px 0px rgba(16, 47, 67, 0.12);
+
+  /* The color for chart elements, such as a bar or line in a chart (Category 1). */
+  --chart-1: #e01700;
+  /* The color for chart elements (Category 2). */
+  --chart-2: #ff8000;
+  /* The color for chart elements (Category 3). */
+  --chart-3: #ed5ea6;
+  /* The color for chart elements (Category 4). */
+  --chart-4: #295eff;
+  /* The color for chart elements (Category 5). */
+  --chart-5: #6817cf;
+  /* The color for chart elements (Category 6). */
+  --chart-6: #1ed2d2;
+  /* The color for chart elements (Category 7). */
+  --chart-7: #40bf84;
+  /* The color for chart elements (Category 8). */
+  --chart-8: #79c716;
+  /* The color for chart elements (Category 9). */
+  --chart-9: #f2bc0d;
+  /* The color for chart elements (Category 10). */
+  --chart-10: #3a495d;
+
+  /* The default border radius for elements such as buttons, cards, and other containers. */
+  --radius: 8px;
+  /* Border radius for button elements. */
+  --radius-button: 99px;
+  /* Border radius for card containers. */
+  --radius-card: 16px;
+  /* Border radius for segment components. */
+  --radius-segment: 8px;
+
+  /* The background color for sidebars, navigation menus, and other persistent elements. */
+  --sidebar: #ffffff;
+  /* The default color for text or elements that appear on top of sidebars. */
+  --sidebar-foreground: #3a495d;
+  /* The primary color used for active elements in sidebars. */
+  --sidebar-primary: #295eff;
+  /* The default color for text on top of sidebar primary elements. */
+  --sidebar-primary-foreground: #ffffff;
+  /* The accent color used for highlights in sidebars. */
+  --sidebar-accent: #295eff;
+  /* The default color for text on top of sidebar accent elements. */
+  --sidebar-accent-foreground: #ffffff;
+  /* The default border color for elements in sidebars. */
+  --sidebar-border: #ccd5df;
+  /* The default color for focus indicators in sidebars. */
+  --sidebar-ring: #295eff;
+}
+
+.dark {
+  /* Dark mode background. */
+  --background: #061223;
+  /* Dark mode foreground. */
+  --foreground: #f3f6f9;
+  /* Dark mode card background. */
+  --card: #061223;
+  /* Dark mode card hover background. */
+  --card-hover: #3a495d;
+  /* Dark mode card foreground. */
+  --card-foreground: #f3f6f9;
+  /* Dark mode popover background. */
+  --popover: #061223;
+  /* Dark mode popover foreground. */
+  --popover-foreground: #f3f6f9;
+  /* Dark mode primary background. */
+  --primary: #295eff;
+  /* Dark mode primary foreground. */
+  --primary-foreground: #ffffff;
+  /* Dark mode secondary background. */
+  --secondary: rgba(0, 0, 0, 0);
+  /* Dark mode secondary foreground. */
+  --secondary-foreground: #295eff;
+  /* Dark mode muted background. */
+  --muted: #7189a7;
+  /* Dark mode muted foreground. */
+  --muted-foreground: #ccd5df;
+  /* Dark mode accent background. */
+  --accent: #295eff;
+  /* Dark mode accent foreground. */
+  --accent-foreground: #ffffff;
+  /* Dark mode destructive background. */
+  --destructive: #bf2310;
+  /* Dark mode destructive foreground. */
+  --destructive-foreground: #ffffff;
+  /* Dark mode border color. */
+  --border: #7189a7;
+  /* Dark mode input background. */
+  --input: #061223;
+  /* Dark mode focus ring. */
+  --ring: #295eff;
+  /* Dark mode sidebar background. */
+  --sidebar: #061223;
+  /* Dark mode sidebar foreground. */
+  --sidebar-foreground: #f3f6f9;
+  /* Dark mode sidebar primary color. */
+  --sidebar-primary: #295eff;
+  /* Dark mode sidebar primary foreground. */
+  --sidebar-primary-foreground: #ffffff;
+  /* Dark mode sidebar accent color. */
+  --sidebar-accent: #295eff;
+  /* Dark mode sidebar accent foreground. */
+  --sidebar-accent-foreground: #ffffff;
+  /* Dark mode sidebar border. */
+  --sidebar-border: #7189a7;
+  /* Dark mode sidebar focus ring. */
+  --sidebar-ring: #295eff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-hover: var(--muted-hover);
+  --color-accent: var(--accent);
+  --color-destructive-subtle: var(--destructive-subtle);
+  --color-success-subtle: var(--success-subtle);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  /* Chart utility colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
+  --color-chart-9: var(--chart-9);
+  --color-chart-10: var(--chart-10);
+  /* Border radius steps */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  /* Elevation steps */
+  --shadow-elevation-sm: var(--elevation-sm);
+  --shadow-elevation-md: var(--elevation-md);
+  --shadow-elevation-lg: var(--elevation-lg);
+  /* Sidebar utility colors */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(
+    --sidebar-primary-foreground
+  );
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(
+    --sidebar-accent-foreground
+  );
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-family);
+  }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(
+    :not(:has([class*=" text-"]), :not(:has([class^="text-"])))
+  ) {
+    h1 {
+      font-family: var(--font-family);
+      font-size: var(--text-h1);
+      font-weight: var(--font-weight-bold);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-family: var(--font-family);
+      font-size: var(--text-h2);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-family: var(--font-family);
+      font-size: var(--text-h3);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-family: var(--font-family);
+      font-size: var(--text-h4);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.5;
+    }
+
+    p {
+      font-family: var(--font-family);
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-regular);
+      line-height: 1.5;
+    }
+
+    label {
+      font-family: var(--font-family);
+      font-size: var(--text-label);
+      font-weight: var(--font-weight-regular);
+      line-height: 1.5;
+    }
+
+    button {
+      font-family: var(--font-family);
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-regular);
+      line-height: 1.5;
+    }
+
+    input {
+      font-family: var(--font-family);
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-regular);
+      line-height: 1.5;
+    }
+  }
 }
