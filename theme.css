@@ -1,0 +1,147 @@
+/* =============================================================================
+   iOS 26 Design System — Theme Tokens
+   Source of truth for all design values. Reference via var(--token-name).
+   ============================================================================= */
+
+:root {
+
+  /* ---------------------------------------------------------------------------
+     BRAND / PRIMARY COLORS
+  --------------------------------------------------------------------------- */
+  --primary:            #295EFF;
+  --primary-hover:      #2049C6;
+  --primary-pressed:    #152F80;
+  --primary-foreground: #FFFFFF;
+
+  /* ---------------------------------------------------------------------------
+     SEMANTIC COLORS
+  --------------------------------------------------------------------------- */
+  --destructive:          #BF2310;
+  --destructive-foreground: #FFFFFF;
+  --destructive-subtle:   rgba(191, 35, 16, 0.10);
+
+  --success:              #0E813E;
+  --success-foreground:   #FFFFFF;
+  --success-subtle:       rgba(14, 129, 62, 0.10);
+
+  --warning:              #B45309;
+  --warning-foreground:   #FFFFFF;
+  --warning-subtle:       rgba(180, 83, 9, 0.10);
+
+  --info:                 #0284C7;
+  --info-foreground:      #FFFFFF;
+  --info-subtle:          rgba(2, 132, 199, 0.10);
+
+  /* ---------------------------------------------------------------------------
+     FOREGROUND / TEXT COLORS
+  --------------------------------------------------------------------------- */
+  --foreground:           #061223;   /* Primary text */
+  --muted-foreground:     #7189A7;   /* Disabled / secondary text */
+  --helper-foreground:    #3A495D;   /* Helper / placeholder text */
+
+  /* ---------------------------------------------------------------------------
+     BACKGROUNDS
+  --------------------------------------------------------------------------- */
+  --background:           #F2F5F8;   /* App background */
+  --card:                 #FFFFFF;   /* Card / surface */
+  --popover:              #FFFFFF;   /* Overlay / popover surface */
+  --input-background:     #FFFFFF;   /* Input field fill */
+  --muted:                #CCD5DF;   /* Disabled background / skeleton */
+  --muted-hover:          rgba(204, 213, 223, 0.50);
+
+  /* ---------------------------------------------------------------------------
+     ACCENT
+  --------------------------------------------------------------------------- */
+  --accent:               #DEE2FF;   /* Secondary button / chip highlight */
+  --accent-foreground:    #295EFF;
+
+  /* ---------------------------------------------------------------------------
+     SECONDARY BUTTON
+  --------------------------------------------------------------------------- */
+  --secondary:            transparent;
+  --secondary-foreground: #295EFF;
+  --secondary-hover:      #DEE2FF;
+
+  /* ---------------------------------------------------------------------------
+     BORDERS
+  --------------------------------------------------------------------------- */
+  --border:               rgba(6, 18, 35, 0.12);   /* Default border */
+  --border-subtle:        rgba(6, 18, 35, 0.06);   /* Subtle dividers */
+  --ring:                 #295EFF;                  /* Focus ring */
+
+  /* ---------------------------------------------------------------------------
+     TYPOGRAPHY
+  --------------------------------------------------------------------------- */
+  --font-family:          'Libre Franklin', -apple-system, BlinkMacSystemFont,
+                          'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  --font-weight-regular:  400;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  /* Type scale */
+  --text-h1:    34px;   /* Large Title — prominent hero amounts, screen titles */
+  --text-h2:    28px;   /* Title 1 */
+  --text-h3:    22px;   /* Title 2 — empty state headings */
+  --text-h4:    20px;   /* Title 3 — section headers */
+  --text-base:  17px;   /* Body / default button / input text */
+  --text-sm:    15px;   /* Secondary label / helper text / links */
+  --text-label: 15px;   /* Badge / chip label */
+  --text-xs:    13px;   /* Segment labels / small metadata */
+  --text-tab:   10px;   /* Tab bar labels */
+  --text-xxs:   11px;   /* Card metadata / micro text */
+
+  /* Line heights */
+  --leading-tight:   1.2;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.6;
+
+  /* ---------------------------------------------------------------------------
+     SPACING SCALE
+  --------------------------------------------------------------------------- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;   /* Card inner padding */
+  --space-5:  20px;   /* Standard component gap / padding */
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;   /* Large component gap */
+
+  /* ---------------------------------------------------------------------------
+     BORDER RADIUS
+  --------------------------------------------------------------------------- */
+  --radius-button: 99px;   /* Pill — buttons, chips */
+  --radius-card:   16px;   /* Cards, sheets */
+  --radius-input:  12px;   /* Input fields */
+  --radius:         8px;   /* Badges, small elements */
+  --radius-sm:      4px;   /* Tight corners */
+  --radius-sheet:  20px;   /* Bottom sheet top corners */
+
+  /* ---------------------------------------------------------------------------
+     ELEVATION / SHADOWS
+  --------------------------------------------------------------------------- */
+  --elevation-sm: 0 1px 3px rgba(6, 18, 35, 0.08),
+                  0 1px 2px rgba(6, 18, 35, 0.04);
+  --elevation-md: 0 4px 8px rgba(6, 18, 35, 0.10),
+                  0 2px 4px rgba(6, 18, 35, 0.06);
+  --elevation-lg: 0 12px 24px rgba(6, 18, 35, 0.12),
+                  0 4px 8px rgba(6, 18, 35, 0.06);
+
+  /* ---------------------------------------------------------------------------
+     ANIMATION
+  --------------------------------------------------------------------------- */
+  --duration-micro:   150ms;                           /* Hover / focus */
+  --duration-state:   250ms;                           /* Toggle / state change */
+  --duration-spatial: 350ms;                           /* Sheet / modal transition */
+  --ease-micro:       ease-in-out;
+  --ease-state:       ease-out;
+  --ease-spatial:     cubic-bezier(0.25, 1, 0.5, 1);  /* Spring-like */
+
+  /* ---------------------------------------------------------------------------
+     iOS LIQUID GLASS MATERIAL
+  --------------------------------------------------------------------------- */
+  --blur-glass:           blur(25px);
+  --glass-overlay:        rgba(255, 255, 255, 0.50);
+  --glass-tint-opacity:   0.50;
+
+}
