@@ -1,16 +1,20 @@
 # iOS 26 Design System — Figma Make Guidelines
 
-Rules for how Figma Make AI should generate UI that matches this iOS 26 design system. Always use the established design tokens, CSS variables, and component names to maintain visual consistency and a native iOS feel.
+> **How to read this file:**
+> All visual values (colors, font sizes, weights, radii, shadows) are defined in `theme.css` as CSS custom properties.
+> This document references them only by variable name — e.g. `var(--primary)`.
+> **Never hardcode a hex, rgb, or raw pixel value in generated UI. Always use the CSS variable.**
 
 ---
 
 ## Core Rules
 
-- **Single Source of Truth**: All colors, fonts, and sizing come from `theme.css`. Never hardcode hex values — always use the corresponding CSS variable (e.g., `var(--primary)`, `var(--text-base)`).
-- **Font Family**: Apply `var(--font-family)` ("Libre Franklin") globally. Use `var(--font-weight-semibold)` for labels, titles, and buttons; `var(--font-weight-regular)` for body, helper, and placeholder text.
-- **Dark Mode**: All color tokens automatically switch via the `.dark` class on the root element. Build with semantic tokens; never hardcode light-only values.
-- **Component Names**: When referencing library components, use the exact name prefixed with 🍏 (e.g., `🍏 Tab Header`). Do not detach or manually override internal spacing.
-- **Logo**: Use `/src/lib/images/logo.svg` as the application logo.
+1. **Source of truth** — Every color, font size, font weight, radius, and shadow must come from `theme.css` via `var(--token)`.
+2. **Typography** — The global font is `var(--font-family)`. Apply `var(--font-weight-semibold)` for labels, titles, and interactive elements; `var(--font-weight-regular)` for body, helper, and placeholder text. Line height is `1.5` globally.
+3. **Dark mode** — All semantic color tokens flip automatically when the `.dark` class is on the root element. Build with semantic tokens; never pin light-only values.
+4. **Component names** — Library components are referenced by their exact 🍏-prefixed name. Do not detach or manually override internals.
+5. **Logo** — Use `/src/lib/images/logo.svg`.
+6. **Fluid interactions** — Elements must track user gestures continuously (swipe, drag). Maintain velocity and feel immediately responsive.
 
 ---
 
@@ -18,609 +22,792 @@ Rules for how Figma Make AI should generate UI that matches this iOS 26 design s
 
 ### 1.1 iOS Liquid Glass Effect
 
-Used for tab bars, sticky headers, contextual menus, and floating overlays.
+Applied to: tab bars, sticky navigation headers, contextual menus, floating overlays.
 
-| Property          | Value                                              |
-|-------------------|----------------------------------------------------|
-| `backdrop-filter` | `blur(25px)`                                       |
-| Bottom layer      | Dark tint + `mix-blend-mode: color-dodge`          |
-| Mid layer         | `rgba(255, 255, 255, 0.50)` + `mix-blend-mode: normal` |
-| Top layer         | `var(--popover)` + `mix-blend-mode: linear-burn`   |
+**Construction (three stacked layers):**
+
+| Layer | Treatment |
+|-------|-----------|
+| Base  | Dark tint fill · `mix-blend-mode: color-dodge` |
+| Mid   | `rgba(255,255,255,0.50)` fill · `mix-blend-mode: normal` |
+| Top   | `var(--popover)` fill · `mix-blend-mode: linear-burn` |
+
+- `backdrop-filter: blur(25px)` on the container
+- Use this material on any element that floats above content
 
 ### 1.2 Base Card
 
-The primary container for grouping related content.
+The primary grouping container for related content.
 
-| Property      | Value                                            |
-|---------------|--------------------------------------------------|
-| Background    | `var(--card)`                                    |
-| Hover         | `var(--card-hover)`                              |
-| Border radius | `var(--radius-card)` → 16px                      |
-| Shadow        | `var(--elevation-sm)`                            |
-| Inner padding | 16px all sides                                   |
-| Title style   | `var(--text-h4)`, `var(--font-weight-semibold)`, top-left |
+| Property      | Token                       |
+|---------------|-----------------------------|
+| Background    | `var(--card)`               |
+| Hover state   | `var(--card-hover)`         |
+| Text          | `var(--card-foreground)`    |
+| Border radius | `var(--radius-card)`        |
+| Shadow        | `var(--elevation-sm)`       |
+| Inner padding | `16px` all sides            |
+
+- **Title placement**: inside the card, top-left, `var(--text-h4)` + `var(--font-weight-semibold)`
+- The content area is a "Swap Instance" slot — drop in lists, forms, or summaries
 
 ### 1.3 Full Screen Sheet (Modal)
 
-| Property         | Value                                                             |
-|------------------|-------------------------------------------------------------------|
-| Background scale | Originating screen scales to `0.95`                               |
-| Corner rounding  | Top corners: `var(--radius-card)` → 16px                         |
-| Overlay          | Dark overlay fades in                                             |
-| Entry animation  | Slides up from bottom, `350ms cubic-bezier(0.25, 1, 0.5, 1)`    |
-| Anatomy          | Grey pill grabber handle at top center, "Cancel" (left) / "Done" (right) text actions, centered title |
+| Property        | Behavior |
+|-----------------|----------|
+| Background scale | Originating screen animates to `scale(0.95)` |
+| Top corners     | Round using `var(--radius-card)` |
+| Overlay         | `var(--foreground)` at low opacity fades in |
+| Sheet entry     | Slides up from bottom edge — `350ms cubic-bezier(0.25,1,0.5,1)` |
+
+**Anatomy (top → bottom inside sheet):**
+1. Grey pill grabber handle — centered at top
+2. Top-left: "Cancel" text action · Top-right: "Done" text action
+3. Centered title — `var(--text-base)` + `var(--font-weight-semibold)`
+4. Content area
+
+### 1.4 Separators & Dividers
+
+- **Section divider**: 1px solid `var(--border-subtle)` — full width
+- **Swap Instance placeholder**: dashed outline in `var(--primary)`, diagonal striped fill — used only in template frames, never in production screens
 
 ---
 
 ## 2. Animation
 
-| Interaction Type               | Duration | Easing                           |
-|--------------------------------|----------|----------------------------------|
-| Micro (hover, focus)           | `150ms`  | `ease-in-out`                    |
-| State change / toggle          | `250ms`  | `ease-out`                       |
-| Spatial (sheet, modal, screen) | `350ms`  | `cubic-bezier(0.25, 1, 0.5, 1)` |
-| Passcode error shake           | Rapid horizontal shake on `var(--destructive)` border |
-
-- Buttons scale down on press: `transform: scale(0.96)`
-- Context menus: Long-press target scales up to `transform: scale(1.05)`, background blurs
-
----
-
-## 3. Color System
-
-All colors must use CSS variables. Light mode values shown; dark mode switches automatically via `.dark`.
-
-### 3.1 Brand & Interactive
-
-| CSS Variable               | Light          | Dark       | Usage                                     |
-|----------------------------|----------------|------------|-------------------------------------------|
-| `var(--primary)`           | `#295eff`      | `#295eff`  | Primary actions, links, active states     |
-| `var(--primary-hover)`     | `#2049c6`      | —          | Button / icon hover                       |
-| `var(--primary-pressed)`   | `#152f80`      | —          | Button press / active                     |
-| `var(--primary-foreground)`| `#ffffff`      | `#ffffff`  | Text on primary-colored surfaces          |
-
-### 3.2 Semantic
-
-| CSS Variable                  | Light      | Dark       | Usage                              |
-|-------------------------------|------------|------------|------------------------------------|
-| `var(--destructive)`          | `#bf2310`  | `#bf2310`  | Error borders, danger buttons      |
-| `var(--destructive-foreground)`| `#ffffff` | `#ffffff`  | Text on destructive surfaces       |
-| `var(--destructive-subtle)`   | `#f5dedb`  | —          | Error/alert backgrounds            |
-| `var(--success)`              | `#0e813e`  | —          | Positive amounts, success states   |
-| `var(--success-subtle)`       | `#dbece2`  | —          | Success alert backgrounds          |
-| `var(--warning)`              | `#fbc02d`  | —          | Cautionary states                  |
-| `var(--warning-subtle)`       | `#fef6df`  | —          | Warning alert backgrounds          |
-
-### 3.3 Surfaces & Text
-
-| CSS Variable               | Light      | Dark       | Usage                                      |
-|----------------------------|------------|------------|--------------------------------------------|
-| `var(--background)`        | `#f3f6f9`  | `#061223`  | App-level background                       |
-| `var(--foreground)`        | `#061223`  | `#f3f6f9`  | Default body text                          |
-| `var(--card)`              | `#ffffff`  | `#061223`  | Card / surface backgrounds                 |
-| `var(--card-hover)`        | `#e1e8ef`  | `#3a495d`  | Card hover state                           |
-| `var(--card-foreground)`   | `#061223`  | `#f3f6f9`  | Text inside cards                          |
-| `var(--popover)`           | `#f7f7f7`  | `#061223`  | Dropdowns, tooltips, glass effect top layer|
-| `var(--muted)`             | `#ccd5df`  | `#7189a7`  | Disabled backgrounds, skeleton loaders     |
-| `var(--muted-foreground)`  | `#7189a7`  | `#ccd5df`  | Disabled text, secondary metadata         |
-| `var(--accent)`            | `#dee2ff`  | `#295eff`  | Secondary chip / button highlight          |
-| `var(--accent-foreground)` | `#152f80`  | `#ffffff`  | Text on accent surfaces                    |
-
-### 3.4 Borders, Inputs & Focus
-
-| CSS Variable               | Light      | Dark       | Usage                               |
-|----------------------------|------------|------------|-------------------------------------|
-| `var(--border)`            | `#7189a7`  | `#7189a7`  | Default element borders             |
-| `var(--border-subtle)`     | `#ccd5df`  | —          | Subtle dividers, row separators     |
-| `var(--input)`             | `#ffffff`  | `#061223`  | Filled input background             |
-| `var(--input-background)`  | `#ffffff`  | —          | Default (unfilled) input background |
-| `var(--input-hover)`       | `#2049c6`  | —          | Input trailing icon hover           |
-| `var(--ring)`              | `#295eff`  | `#295eff`  | Focus ring / outline                |
-
-### 3.5 Helper / Placeholder Text
-
-Use `var(--sidebar-foreground)` (`#3a495d`) for helper text, placeholder text, and optional field markers. This is the mid-tone between `var(--foreground)` and `var(--muted-foreground)`.
+| Interaction                 | Duration | Easing                          |
+|-----------------------------|----------|---------------------------------|
+| Micro (hover, focus ring)   | `150ms`  | `ease-in-out`                   |
+| State change / toggle       | `250ms`  | `ease-out`                      |
+| Spatial (sheet, modal, nav) | `350ms`  | `cubic-bezier(0.25, 1, 0.5, 1)`|
+| Button press                | Immediate | `transform: scale(0.96)`       |
+| Context menu expand         | Immediate | target `transform: scale(1.05)` |
+| Passcode error              | Rapid horizontal shake on `var(--destructive)` border |
 
 ---
 
-## 4. Typography Scale
+## 3. Typography Hierarchy
 
-Only these CSS variables exist in `theme.css`. For sizes below `--text-label`, use literal pixel values.
+All font sizes are defined in `theme.css`. Use the variables — do not substitute literal values.
 
-| Variable           | Size  | Weight Default     | Usage                                   |
-|--------------------|-------|--------------------|-----------------------------------------|
-| `var(--text-h1)`   | 34px  | Bold               | Large titles, hero amounts              |
-| `var(--text-h2)`   | 28px  | SemiBold           | Section titles                          |
-| `var(--text-h3)`   | 22px  | SemiBold           | Empty state headings                    |
-| `var(--text-h4)`   | 20px  | SemiBold           | Card headers, sub-section titles        |
-| `var(--text-base)` | 17px  | Regular / SemiBold | Body, buttons, input text               |
-| `var(--text-label)`| 15px  | Regular / SemiBold | Labels, helper text, links, chips       |
-| `13px` (literal)   | 13px  | Regular / SemiBold | Segment labels, small metadata          |
-| `10px` (literal)   | 10px  | Regular            | Tab bar labels                          |
-| `11px` (literal)   | 11px  | Regular            | Card micro-text, CVV labels             |
+| Variable           | Weight Default       | Role                                          |
+|--------------------|----------------------|-----------------------------------------------|
+| `var(--text-h1)`   | `var(--font-weight-bold)` | Large title — hero amounts, screen titles |
+| `var(--text-h2)`   | `var(--font-weight-bold)` | Title 1 — major section headings          |
+| `var(--text-h3)`   | `var(--font-weight-semibold)` | Title 2 — subsection headings, empty states |
+| `var(--text-h4)`   | `var(--font-weight-semibold)` | Title 3 — card titles, inline headers     |
+| `var(--text-base)` | `var(--font-weight-regular)` | Body — default text, input values, buttons |
+| `var(--text-label)`| `var(--font-weight-regular)` | Label — helper text, secondary descriptions, chips |
 
-Line height: `1.5` globally (set in `theme.css` base layer).
-
-Font weights: `var(--font-weight-regular)` · `var(--font-weight-semibold)` · `var(--font-weight-bold)`
+For sizes smaller than `var(--text-label)` (segment labels `13px`, tab labels `10px`, micro-text `11px`), use literal `px` values since no variable is defined in `theme.css`.
 
 ---
 
-## 5. Border Radius
+## 4. Color Token Reference
 
-| Variable              | Value  | Usage                               |
-|-----------------------|--------|-------------------------------------|
-| `var(--radius-button)`| 99px   | Pill — buttons, chips               |
-| `var(--radius-card)`  | 16px   | Cards, sheets, payment cards        |
-| `var(--radius-segment)`| 8px   | Segmented control pill              |
-| `var(--radius)`       | 8px    | Badges, general elements            |
-| `var(--radius-sm)`    | 4px    | Tight corners (computed: `calc(var(--radius) - 4px)`) |
-| `var(--radius-xl)`    | 12px   | Input fields (computed: `calc(var(--radius) + 4px)`) |
+Refer to `theme.css` for all values. Use these variable names in generated UI:
 
----
+### Backgrounds & Surfaces
+`var(--background)` · `var(--card)` · `var(--card-hover)` · `var(--card-foreground)` · `var(--popover)` · `var(--popover-foreground)`
 
-## 6. Elevation
+### Brand & Interactive
+`var(--primary)` · `var(--primary-hover)` · `var(--primary-pressed)` · `var(--primary-foreground)` · `var(--secondary)` · `var(--secondary-hover)` · `var(--secondary-foreground)`
 
-| Variable             | Value                                        | Usage             |
-|----------------------|----------------------------------------------|-------------------|
-| `var(--elevation-sm)`| `0px 4px 9px 0px rgba(16,47,67,0.12)`       | Cards, modals     |
-| `var(--elevation-md)`| `0px 8px 16px 0px rgba(16,47,67,0.12)`      | Floating elements |
-| `var(--elevation-lg)`| `0px 15px 20px 0px rgba(16,47,67,0.12)`     | Sheets, drawers   |
+### Accent
+`var(--accent)` · `var(--accent-foreground)`
 
----
+### Muted / Disabled
+`var(--muted)` · `var(--muted-hover)` · `var(--muted-foreground)`
 
-## 7. Chart Colors
+### Semantic States
+`var(--destructive)` · `var(--destructive-foreground)` · `var(--destructive-subtle)`
+`var(--success)` · `var(--success-subtle)`
+`var(--warning)` · `var(--warning-subtle)`
 
-For data visualization (charts, graphs, progress indicators):
+### Text
+`var(--foreground)` — primary text
+`var(--muted-foreground)` — secondary / disabled text
+`var(--sidebar-foreground)` — helper text, placeholders, optional field markers
 
-| Variable          | Value     |
-|-------------------|-----------|
-| `var(--chart-1)`  | `#e01700` |
-| `var(--chart-2)`  | `#ff8000` |
-| `var(--chart-3)`  | `#ed5ea6` |
-| `var(--chart-4)`  | `#295eff` |
-| `var(--chart-5)`  | `#6817cf` |
-| `var(--chart-6)`  | `#1ed2d2` |
-| `var(--chart-7)`  | `#40bf84` |
-| `var(--chart-8)`  | `#79c716` |
-| `var(--chart-9)`  | `#f2bc0d` |
-| `var(--chart-10)` | `#3a495d` |
+### Borders & Focus
+`var(--border)` · `var(--border-subtle)` · `var(--ring)`
 
----
+### Inputs
+`var(--input)` — filled input background
+`var(--input-background)` — default (empty) input background
+`var(--input-hover)` — trailing icon hover inside inputs
 
-## 8. Headers & Navigation
+### Elevation (Shadows)
+`var(--elevation-sm)` · `var(--elevation-md)` · `var(--elevation-lg)`
 
-### 8.1 Page Header — `🍏 Tab Header`
+### Border Radii
+`var(--radius-button)` · `var(--radius-card)` · `var(--radius-segment)` · `var(--radius)` · `var(--radius-sm)` · `var(--radius-md)` · `var(--radius-lg)` · `var(--radius-xl)`
 
-**Component**: `🍏 Tab Header` · 375×166px
-
-| Prop             | Type    | Default | Options |
-|------------------|---------|---------|---------|
-| `has trailing 3` | Boolean | `true`  | —       |
-| `has trailing 2` | Boolean | `false` | —       |
-| `has trailing 1` | Boolean | `false` | —       |
-| `has tabs`       | Boolean | `true`  | —       |
-
-- Contains: iOS Status Bar → Toolbar (leading Avatar + app name, trailing action buttons) → horizontal scrolling tab strip
-- Title: `var(--text-base)` SemiBold, `var(--primary-foreground)`
-- Subtitle: `13px`, `var(--primary-foreground)`
-- Tab labels: `var(--text-label)` SemiBold active / Regular inactive
-
-### 8.2 Section / Card Headers
-
-- **Title**: `var(--text-h4)`, `var(--font-weight-semibold)`, `var(--foreground)`
-- **Subtitle**: `13px`, `var(--muted-foreground)`
-- **Trailing — More Menu**: Horizontal `•••` icon in `var(--muted-foreground)`
-- **Trailing — Status Badge**: Semantic pill (see §12.3)
-- **Trailing — Action Link**: `var(--text-label)` SemiBold, `var(--primary)`
-
-### 8.3 Copyable Account Header
-
-- Muted "Account name" label: `var(--muted-foreground)`
-- Large Bold title: `var(--text-h1)`, `var(--font-weight-bold)`, `var(--foreground)`
-- Trailing copy icon: `var(--primary)`
+### Chart Colors (data visualization only)
+`var(--chart-1)` through `var(--chart-10)`
 
 ---
 
-## 9. Navigation Components
+## 5. Headers & Hierarchy
 
-### 9.1 Tab Bar — `🍏  iOS26+/Tab Bar`
+### 5.1 Page Header — `🍏 Tab Header`
 
-**Component**: `🍏  iOS26+/Tab Bar` · Uses Liquid Glass material (§1.1)
+**Component**: `🍏 Tab Header`
 
-| Prop              | Type    | Default | Options            |
-|-------------------|---------|---------|--------------------|
-| `Separate Search` | Variant | `False` | `False`, `True`    |
-| `Tabs`            | Variant | `5`     | `2`, `3`, `4`, `5` |
+**Props:**
 
-- Tab labels: `10px` Regular
-- Active tab icon + label: `var(--primary)`
-- Inactive tab icon + label: `var(--foreground)`
+| Prop             | Type    | Default |
+|------------------|---------|---------|
+| `has trailing 3` | Boolean | `true`  |
+| `has trailing 2` | Boolean | `false` |
+| `has trailing 1` | Boolean | `false` |
+| `has tabs`       | Boolean | `true`  |
 
-### 9.2 Navigation Controller — `🍏 Navigation Controller`
+**Anatomy (top → bottom):**
+1. `🍏 Status Bar` — iOS system status bar (time, Dynamic Island, indicators)
+2. Toolbar row:
+   - Leading: `🍏 Avatar` + app/account name
+   - Trailing: up to 3 action buttons (`🍏 Tab Header / Button`, 44×44pt tap targets)
+3. Tab strip — horizontal scrollable tabs (`🍏 Tab Header Tabs`)
+
+**Typography:**
+- Toolbar title: `var(--text-base)` + `var(--font-weight-semibold)` on `var(--primary-foreground)`
+- Toolbar subtitle: `13px` on `var(--primary-foreground)`
+- Active tab label: `var(--text-label)` + `var(--font-weight-semibold)` on `var(--primary)`
+- Inactive tab label: `var(--text-label)` + `var(--font-weight-regular)` on `var(--foreground)`
+
+### 5.2 Section / Card Headers
+
+Used as the header row inside cards or between sections.
+
+**Anatomy:**
+- **Title** — left-aligned, `var(--text-h4)` + `var(--font-weight-semibold)`, `var(--foreground)`
+- **Subtitle** — below title, `13px` + `var(--font-weight-regular)`, `var(--muted-foreground)`
+- **Trailing options** (right-aligned, pick one):
+  - **More Menu** — horizontal `•••` icon, `var(--muted-foreground)`
+  - **Status Badge** — semantic pill (see §12.3)
+  - **Action Link** — `var(--text-label)` + `var(--font-weight-semibold)`, `var(--primary)`
+
+### 5.3 Copyable Account Header
+
+Used at the top of account detail screens.
+
+**Anatomy (top → bottom):**
+1. "Account name" label — `var(--text-label)`, `var(--muted-foreground)`
+2. Account title — `var(--text-h1)` + `var(--font-weight-bold)`, `var(--foreground)`
+3. Trailing copy icon — `var(--primary)`
+
+---
+
+## 6. Navigation
+
+### 6.1 Tab Bar — `🍏  iOS26+/Tab Bar`
+
+**Component**: `🍏  iOS26+/Tab Bar`
+**Material**: iOS Liquid Glass (§1.1) — floating above content
+
+**Variants:**
+
+| Prop              | Options              | Default |
+|-------------------|----------------------|---------|
+| `Tabs`            | `2`, `3`, `4`, `5`  | `5`     |
+| `Separate Search` | `False`, `True`      | `False` |
+
+**Tab item anatomy:**
+- Icon: 24×24px symbol
+- Label below icon: `10px` + `var(--font-weight-regular)`
+- Active: icon + label in `var(--primary)`
+- Inactive: icon + label in `var(--foreground)`
+
+**Behavior:**
+- Floating pill that hugs the bottom safe area
+- Tapping inactive tab: icon bounces with `250ms ease-out`
+- `Separate Search=True`: search icon is promoted to a standalone pill outside the tab group
+
+### 6.2 Navigation Controller — `🍏 Navigation Controller`
 
 **Component**: `🍏 Navigation Controller`
 
-| Prop               | Type    | Default       | Options                         |
-|--------------------|---------|---------------|---------------------------------|
-| `variant`          | Variant | `default`     | `default`, `modal`, `modalPage` |
-| `mode`             | Variant | `large`       | `large`, `inline`               |
-| `title`            | Text    | `Large title` | —                               |
-| `has handle`       | Boolean | `true`        | —                               |
-| `has leading item` | Boolean | `true`        | —                               |
-| `has trailing item`| Boolean | `true`        | —                               |
-| `has search`       | Boolean | `false`       | —                               |
-| `has toolbar`      | Boolean | `true`        | —                               |
+**Variants:**
 
-- **large mode**: `var(--text-h1)` Bold title collapses to inline on scroll
-- **inline mode**: Compact centered title `var(--text-base)` SemiBold
-- **modal variant**: Includes grabber handle; modal sheet presentation
-- **modalPage variant**: Page within a modal; includes leading "Back" / "Cancel"
+| Prop       | Options                         | Default   |
+|------------|---------------------------------|-----------|
+| `variant`  | `default`, `modal`, `modalPage` | `default` |
+| `mode`     | `large`, `inline`               | `large`   |
+
+**Boolean props:**
+
+| Prop               | Default |
+|--------------------|---------|
+| `title`            | text prop |
+| `has handle`       | `true`  |
+| `has leading item` | `true`  |
+| `has trailing item`| `true`  |
+| `has search`       | `false` |
+| `has toolbar`      | `true`  |
+
+**Mode behavior:**
+- **large**: Prominent title `var(--text-h1)` + `var(--font-weight-bold)` shown below toolbar; collapses to inline title on scroll
+- **inline**: Compact centered title `var(--text-base)` + `var(--font-weight-semibold)` in toolbar row
+
+**Variant behavior:**
+- **default**: Standard push navigation; back chevron in `var(--primary)`
+- **modal**: Sheet presentation; includes grabber handle; leading "Cancel" in `var(--primary)`
+- **modalPage**: Page inside a modal; leading "Back" or "Close"
 
 ---
 
-## 10. Buttons & Actions
+## 7. Buttons & Actions
 
-### 10.1 Standard Buttons
+### 7.1 Standard Buttons
 
-- Corner radius: `var(--radius-button)` → 99px (pill shape)
-- Font: `var(--text-label)` SemiBold
-- Press animation: `transform: scale(0.96)`
+**Shape**: `var(--radius-button)` — pill
+**Press animation**: `transform: scale(0.96)`
+**Font**: `var(--text-label)` + `var(--font-weight-semibold)`
 
-| Style     | Background           | Text                       | Hover                    |
-|-----------|----------------------|----------------------------|--------------------------|
-| Primary   | `var(--primary)`     | `var(--primary-foreground)`| `var(--primary-hover)`   |
-| Secondary | `var(--accent)`      | `var(--accent-foreground)` | `var(--secondary-hover)` |
-| Tertiary  | `transparent`        | `var(--foreground)`        | `var(--card-hover)`      |
-| Success   | `var(--success)`     | `var(--primary-foreground)`| Darken success           |
-| Danger    | `var(--destructive)` | `var(--destructive-foreground)` | Darken destructive  |
+**Style tokens:**
 
-| State    | Behavior                                                       |
-|----------|----------------------------------------------------------------|
-| Default  | Standard resting appearance                                    |
-| Hover    | Background shifts to hover token                               |
-| Pressed  | `var(--primary-pressed)` + `scale(0.96)`                      |
-| Loading  | Replace content with centered `🍏 Activity Indicator`         |
-| Disabled | Background `var(--muted)`, text `var(--muted-foreground)`      |
+| Style     | Background             | Text                          | Hover                     |
+|-----------|------------------------|-------------------------------|---------------------------|
+| Primary   | `var(--primary)`       | `var(--primary-foreground)`   | `var(--primary-hover)`    |
+| Secondary | `var(--accent)`        | `var(--accent-foreground)`    | `var(--secondary-hover)`  |
+| Tertiary  | `transparent`          | `var(--foreground)`           | `var(--card-hover)`       |
+| Success   | `var(--success)`       | `var(--primary-foreground)`   | Darken via filter         |
+| Danger    | `var(--destructive)`   | `var(--destructive-foreground)` | Darken via filter       |
 
-### 10.2 Icon Button — `🍏 Icon Button`
+**States:**
+
+| State    | Behavior                                                              |
+|----------|-----------------------------------------------------------------------|
+| Default  | Resting appearance per style above                                    |
+| Hover    | Background shifts to hover token · `150ms ease-in-out`               |
+| Pressed  | `var(--primary-pressed)` background · `scale(0.96)`                  |
+| Loading  | Text and icons hidden; centered `🍏 Activity Indicator` appears      |
+| Disabled | Background → `var(--muted)` · Text → `var(--muted-foreground)` · no interaction |
+
+**Sizes:**
+- **Large** — full-width or prominent CTA; `var(--text-base)`
+- **Medium** — standard; `var(--text-label)`
+- **Small** — compact / dense layouts; `var(--text-label)` · reduced padding
+
+### 7.2 Icon Button — `🍏 Icon Button`
 
 **Component**: `🍏 Icon Button`
 
-| Prop    | Type          | Default   | Options                                      |
-|---------|---------------|-----------|----------------------------------------------|
-| `title` | Text          | `Button`  | —                                            |
-| `icon`  | Instance Swap | —         | Any 24×24 icon                               |
-| `style` | Variant       | `primary` | `primary`, `danger`                          |
-| `state` | Variant       | `default` | `default`, `pressed`, `loading`, `disabled`  |
+**Props:**
 
-### 10.3 Text Links — `🍏 Link`
+| Prop    | Type          | Default   | Options                                          |
+|---------|---------------|-----------|--------------------------------------------------|
+| `title` | Text          | `Button`  | —                                                |
+| `icon`  | Instance Swap | —         | Any 24×24 icon                                   |
+| `style` | Variant       | `primary` | `primary`, `danger`                              |
+| `state` | Variant       | `default` | `default`, `pressed`, `loading`, `disabled`      |
+
+**Layout:**
+- Icon (56×56pt circular container) stacked above label
+- Label: `var(--text-label)` + `var(--font-weight-semibold)`
+- Primary style icon container: `var(--primary)` fill
+- Danger style icon container: `var(--destructive)` fill
+
+### 7.3 Text Links — `🍏 Link`
 
 **Component**: `🍏 Link`
 
-| Prop       | Type          | Default     | Options                                      |
-|------------|---------------|-------------|----------------------------------------------|
-| `title`    | Text          | `Text link` | —                                            |
-| `icon`     | Instance Swap | —           | Trailing icon (default: `open_in_new`)       |
-| `has icon` | Boolean       | `true`      | —                                            |
-| `state`    | Variant       | `default`   | `default`, `pressed`, `loading`, `disabled`  |
-| `on color` | Variant       | `false`     | `false` (primary), `true` (white on colored bg) |
+**Props:**
 
-- Font: `var(--text-label)` SemiBold
-- Default: `var(--primary)` · On-color: `var(--primary-foreground)`
-- Disabled: `var(--muted-foreground)`
+| Prop       | Type          | Default     | Options                                       |
+|------------|---------------|-------------|-----------------------------------------------|
+| `title`    | Text          | `Text link` | —                                             |
+| `icon`     | Instance Swap | —           | Trailing icon, default: `open_in_new` (24×24) |
+| `has icon` | Boolean       | `true`      | —                                             |
+| `state`    | Variant       | `default`   | `default`, `pressed`, `loading`, `disabled`   |
+| `on color` | Variant       | `false`     | `false`, `true`                               |
+
+**Color by state and variant:**
+
+| State    | on color=false               | on color=true                    |
+|----------|------------------------------|----------------------------------|
+| Default  | `var(--primary)`             | `var(--primary-foreground)`      |
+| Pressed  | `var(--primary-pressed)` + underline | `var(--primary-foreground)` + underline |
+| Loading  | `var(--primary)` + inline spinner | `var(--primary-foreground)` + spinner |
+| Disabled | `var(--muted-foreground)`    | `var(--muted-foreground)`        |
 
 ---
 
-## 11. Form Inputs & Data Entry
+## 8. Form Inputs & Data Entry
 
-All inputs follow iOS grouped list styling:
+### 8.1 Input Anatomy (All Types)
 
-- **Label**: `var(--text-base)` SemiBold, `var(--foreground)`
-- **Optional marker**: "(optional)" `var(--text-base)` Regular, `var(--sidebar-foreground)` — inline after label
-- **Input container**: `var(--radius-xl)` → 12px radius, `var(--input-background)` fill, `var(--border)` outline
-- **Helper text**: `var(--text-label)` Regular, `var(--sidebar-foreground)` — below input
-- **Error text**: `var(--text-label)` Regular, `var(--destructive)` — replaces helper on error
+Every input follows the same structural hierarchy:
 
-| State     | Border / Behavior                                              |
-|-----------|----------------------------------------------------------------|
-| Default   | `var(--border)`                                                |
-| Focus     | `var(--ring)`, subtle glow                                     |
-| Filled    | `var(--input)` background                                      |
-| Error     | `var(--destructive)` border + trailing `!` icon + error text   |
-| Read-only | Standard border, no interaction                                |
-| Disabled  | `var(--muted)` background, `var(--muted-foreground)` text      |
+```
+Label row
+  ├─ Field label        var(--text-base) · semibold · var(--foreground)
+  └─ "(optional)" tag   var(--text-base) · regular  · var(--sidebar-foreground)
+Input container
+  ├─ Leading slot       icon or flag (optional)
+  ├─ Value / placeholder
+  │    value text       var(--text-base) · regular  · var(--foreground)
+  │    placeholder      var(--text-base) · regular  · var(--sidebar-foreground)
+  └─ Trailing slot      icon, toggle, or error indicator (optional)
+Helper / error row
+  ├─ Helper text        var(--text-label) · regular · var(--sidebar-foreground)
+  └─ Error text         var(--text-label) · regular · var(--destructive)
+```
 
-### 11.1 Search Bar — `🍏 Search Bar / Standalone`
+**Container styling:**
+- Border radius: `var(--radius-xl)` (computed from `theme.css`)
+- Default fill: `var(--input-background)`
+- Filled fill: `var(--input)`
+- Border: `var(--border)`
+
+### 8.2 Input States
+
+| State     | Border            | Background           | Additional                          |
+|-----------|-------------------|----------------------|-------------------------------------|
+| Default   | `var(--border)`   | `var(--input-background)` | —                              |
+| Focus     | `var(--ring)`     | `var(--input-background)` | Subtle glow on ring             |
+| Filled    | `var(--border)`   | `var(--input)`       | —                                   |
+| Error     | `var(--destructive)` | `var(--input-background)` | Trailing `!` icon · error text replaces helper |
+| Read-only | `var(--border)`   | `var(--input-background)` | No cursor · no interaction      |
+| Disabled  | `var(--border-subtle)` | `var(--muted)` | Text → `var(--muted-foreground)` · no interaction |
+
+### 8.3 Search Bar — `🍏 Search Bar / Standalone`
 
 **Component**: `🍏 Search Bar / Standalone`
 
-| Prop       | Type    | Default | Options                             |
-|------------|---------|---------|-------------------------------------|
-| `state`    | Variant | `idle`  | `idle`, `focus`, `typing`, `filled` |
-| `on color` | Variant | `false` | `false`, `true`                     |
+**Props:**
 
-- Leading magnifier icon; trailing clear `×` icon when typing / filled
-- `on color=true`: For placement on colored or image backgrounds
+| Prop       | Type    | Default | Options                              |
+|------------|---------|---------|--------------------------------------|
+| `state`    | Variant | `idle`  | `idle`, `focus`, `typing`, `filled`  |
+| `on color` | Variant | `false` | `false`, `true`                      |
 
-### 11.2 Text Area — `🍏 Text Area`
+**State anatomy:**
+- **idle** — magnifier icon in `var(--muted-foreground)` · placeholder text in `var(--sidebar-foreground)`
+- **focus** — cursor appears · keyboard opens
+- **typing** — trailing `×` clear button in `var(--muted-foreground)` appears
+- **filled** — value text in `var(--foreground)` · `×` remains
+- **on color=true** — for placement on `var(--primary)` or image backgrounds
+
+### 8.4 Text Area — `🍏 Text Area`
 
 **Component**: `🍏 Text Area`
 
-| Prop     | Type    | Default   | Options                                              |
-|----------|---------|-----------|------------------------------------------------------|
-| `state`  | Variant | `default` | `default`, `focus`, `error`, `read-only`, `disabled` |
-| `filled` | Boolean | `false`   | —                                                    |
+**Props:**
 
-- Character count at bottom-right: `13px` Regular, `var(--muted-foreground)`
+| Prop     | Type    | Default   | Options                                               |
+|----------|---------|-----------|-------------------------------------------------------|
+| `state`  | Variant | `default` | `default`, `focus`, `error`, `read-only`, `disabled`  |
+| `filled` | Boolean | `false`   | —                                                     |
 
-### 11.3 Phone Input — `🍏 Input Phone`
+**Additional anatomy:**
+- Character count — bottom-right, `13px` + `var(--font-weight-regular)`, `var(--muted-foreground)`
+- Expands vertically with content
+
+### 8.5 Phone Input — `🍏 Input Phone`
 
 **Component**: `🍏 Input Phone`
 
-| Prop     | Type    | Default   | Options                                              |
-|----------|---------|-----------|------------------------------------------------------|
-| `state`  | Variant | `default` | `default`, `focus`, `error`, `read-only`, `disabled` |
-| `filled` | Boolean | `false`   | —                                                    |
+**Props:**
 
-- Leading country flag + dial code (e.g., "+1") selector in `var(--foreground)`
-- Placeholder: `var(--sidebar-foreground)`
-- Value text: `var(--text-base)` Regular, `var(--foreground)`
+| Prop     | Type    | Default   | Options                                               |
+|----------|---------|-----------|-------------------------------------------------------|
+| `state`  | Variant | `default` | `default`, `focus`, `error`, `read-only`, `disabled`  |
+| `filled` | Boolean | `false`   | —                                                     |
 
-### 11.4 Password Input — `🍏 Input Password`
+**Leading element:** Country flag + dial code selector
+- Flag image (20×14px) + dial code (e.g. "+1") — `var(--text-base)` + `var(--foreground)`
+- Separated from input field by `var(--border-subtle)` vertical line
+- Tapping flag opens country picker sheet
+
+### 8.6 Password Input — `🍏 Input Password`
 
 **Component**: `🍏 Input Password`
 
-| Prop     | Type    | Default   | Options                                    |
-|----------|---------|-----------|--------------------------------------------|
-| `state`  | Variant | `default` | `default`, `focus`, `error`, `disabled`    |
-| `filled` | Boolean | `false`   | —                                          |
+**Props:**
 
-- Trailing `🍏 Password Toggle` icon; hover color `var(--input-hover)`
-- Masked display uses `🍏 Password Mask`
+| Prop     | Type    | Default   | Options                                     |
+|----------|---------|-----------|---------------------------------------------|
+| `state`  | Variant | `default` | `default`, `focus`, `error`, `disabled`     |
+| `filled` | Boolean | `false`   | —                                           |
 
-### 11.5 Date Input — `🍏 Input Date`
+**Trailing toggle** — `🍏 Password Toggle` icon:
+- Hidden state: eye-slash icon · value masked via `🍏 Password Mask`
+- Shown state: eye icon · value revealed as plain text
+- Icon color: `var(--muted-foreground)` · hover: `var(--input-hover)`
+
+### 8.7 Date Input — `🍏 Input Date`
 
 **Component**: `🍏 Input Date`
 
-- Trailing calendar icon; opens native iOS date picker on tap
-- Supports the same 5-state pattern as other inputs
+- Trailing calendar icon · `var(--muted-foreground)` · hover: `var(--input-hover)`
+- Tap opens native iOS date picker as bottom sheet
+- Supports same 5-state pattern as other inputs (default, focus, error, read-only, disabled)
+- Displayed value: `var(--text-base)` + `var(--foreground)`
 
-### 11.6 Segmented Control — `🍏 Segmented Control`
+### 8.8 Segmented Control — `🍏 Segmented Control`
 
 **Component**: `🍏 Segmented Control`
 
-| Prop       | Type    | Default      | Options                                          |
-|------------|---------|--------------|--------------------------------------------------|
-| `segments` | Variant | `2 segments` | `2 segments`, `3 segments`, `4 segments`, `5 segments` |
+**Variants:**
 
-- Radius: `var(--radius-segment)` → 8px
-- Selected label: `13px` SemiBold, `var(--foreground)`
-- Unselected label: `13px` Regular, `var(--muted-foreground)`
-- Segment separator: `var(--border-subtle)`
-- Selected pill: `var(--card)` + `var(--elevation-sm)`
+| Prop       | Options                                          | Default      |
+|------------|--------------------------------------------------|--------------|
+| `segments` | `2 segments`, `3 segments`, `4 segments`, `5 segments` | `2 segments` |
+
+**Anatomy:**
+- Outer track — `var(--muted)` fill · `var(--radius-segment)` corners
+- Selected segment pill — `var(--card)` fill · `var(--elevation-sm)` · `var(--radius-segment)` corners
+- Segment separators — 1px `var(--border-subtle)` vertical lines (hidden on selected/adjacent segments)
+
+**Typography:**
+- Selected label: `13px` + `var(--font-weight-semibold)` · `var(--foreground)`
+- Unselected label: `13px` + `var(--font-weight-regular)` · `var(--muted-foreground)`
+- All labels: centered · transition `250ms ease-out`
 
 ---
 
-## 12. Financial & Complex Components
+## 9. Financial & Complex Components
 
-### 12.1 Amount Input — `🍏 Input Amount`
+### 9.1 Amount Input — `🍏 Input Amount`
 
 **Component**: `🍏 Input Amount`
 
-| Prop               | Type    | Default   | Options                                              |
-|--------------------|---------|-----------|------------------------------------------------------|
-| `style`            | Variant | `default` | `default`, `prominent`                               |
-| `state`            | Variant | `default` | `default`, `focused`, `error`, `read-only`, `disabled` |
-| `filled`           | Boolean | `false`   | —                                                    |
-| `multi-currency`   | Boolean | `True`    | —                                                    |
-| `currency position`| Variant | `left`    | `left`, `right`                                      |
+**Variants:**
 
-- **default style**: Standard input height
-- **prominent style**: Large hero display (`var(--text-h1)` Bold, `var(--foreground)`)
-- Currency symbol: `var(--muted-foreground)`
+| Prop               | Options                                              | Default   |
+|--------------------|------------------------------------------------------|-----------|
+| `style`            | `default`, `prominent`                               | `default` |
+| `state`            | `default`, `focused`, `error`, `read-only`, `disabled` | `default` |
+| `filled`           | `true`, `false`                                      | `false`   |
+| `multi-currency`   | `True`, `False`                                      | `True`    |
+| `currency position`| `left`, `right`                                      | `left`    |
 
-### 12.2 Account Selector (Transfer)
+**Style anatomy:**
+- **default** — standard input container height; label above; amount and currency inline
+- **prominent** — hero display; amount in `var(--text-h1)` + `var(--font-weight-bold)` · `var(--foreground)` · currency in `var(--muted-foreground)`
 
-- Two stacked inputs ("From" / "To") bridged by circular swap icon
-- When filled: leading `🍏 Avatar` / Emblem + account name + balance (`var(--muted-foreground)`)
-- Swap icon: `var(--primary)`
+**Currency selector (multi-currency=True):**
+- Currency code + chevron → tapping opens bottom sheet currency picker
+- Color: `var(--primary)` for the currency code + chevron
 
-### 12.3 Passcode Input
+### 9.2 Account Selector (Transfer)
 
-- Horizontal row of equal-width square boxes
-- Filled box: centered dot, `var(--foreground)`
-- Error state: `var(--destructive)` border + rapid horizontal shake animation
+Two input rows stacked with a swap control between them.
 
-### 12.4 Payment Card — `🍏 Payment Card`
+**Anatomy:**
+- "From" row — same structure as a standard list row (leading emblem + account name + balance)
+- Circular swap button — centered between rows · icon `var(--primary-foreground)` on `var(--primary)` fill · 40×40pt
+- "To" row — same structure; placeholder when empty
+
+**Filled state:**
+- Leading `🍏 Avatar` or Emblem
+- Account name — `var(--text-base)` + `var(--font-weight-semibold)` · `var(--foreground)`
+- Available balance — `var(--text-label)` + `var(--font-weight-regular)` · `var(--muted-foreground)`
+
+### 9.3 Passcode Input
+
+Horizontal row of 4–6 equal-width square boxes.
+
+| State   | Appearance                                                         |
+|---------|--------------------------------------------------------------------|
+| Empty   | `var(--border)` outline · transparent fill                         |
+| Filled  | Centered dot · `var(--foreground)` fill                            |
+| Active  | `var(--ring)` outline (current position being typed)               |
+| Error   | All boxes: `var(--destructive)` outline + rapid horizontal shake animation |
+
+### 9.4 Payment Card — `🍏 Payment Card`
 
 **Component**: `🍏 Payment Card`
 
-| Prop          | Type    | Default                  | Options         |
-|---------------|---------|--------------------------|-----------------|
-| `card side`   | Variant | `front`                  | `front`, `back` |
-| `locked`      | Variant | `false`                  | `false`, `true` |
-| `card holder` | Text    | `Ricardo Jones Peterson` | —               |
-| `card number` | Text    | `4350`                   | Last 4 digits   |
-| `expiry date` | Text    | `12/24`                  | —               |
-| `card type`   | Text    | `Debit`                  | —               |
-| `cvv`         | Text    | `XXX`                    | —               |
+**Variants:**
 
-- Corner radius: `var(--radius-card)` → 16px
-- Locked state: overlay with lock icon
-- Card number masked except last 4 digits
+| Prop        | Options         | Default |
+|-------------|-----------------|---------|
+| `card side` | `front`, `back` | `front` |
+| `locked`    | `false`, `true` | `false` |
 
-### 12.5 Summary Stacks
+**Editable text props:** `card holder` · `card number` (last 4 digits) · `expiry date` · `card type` · `cvv`
 
-- Label: `13px` Regular, `var(--muted-foreground)` — uppercase or title-case
-- Value: `var(--text-base)` SemiBold, `var(--foreground)`
-- Divider: `var(--border-subtle)` 1px hairline
+**Front anatomy:**
+- Gradient background (brand or network colors)
+- Network logo — top-right
+- Card type badge — `var(--text-label)` + `var(--font-weight-semibold)` on semi-transparent pill
+- Masked number — `•••• •••• •••• [last4]` — `var(--text-base)` + `var(--font-weight-semibold)`
+- Card holder name — `var(--text-label)` + `var(--font-weight-regular)`
+- Expiry — `var(--text-label)` + `var(--font-weight-regular)`
+- Corner radius: `var(--radius-card)`
 
----
+**Back anatomy:**
+- Magnetic stripe band — full width
+- CVV field — `var(--foreground)` text on `var(--card)` strip; `11px` + `var(--font-weight-regular)`
 
-## 13. Lists & Rows
+**Locked state:** Full-card overlay with lock icon centered · `var(--muted-foreground)`
 
-### 13.1 Standard List Row
+### 9.5 Summary Stacks
 
-- **Leading**: `🍏 Avatar` or Emblem + Title + Subtitle
-- **Trailing**: Chevron `›`, `var(--muted-foreground)`
-- Title: `var(--text-base)` SemiBold, `var(--foreground)`
-- Subtitle: `var(--text-label)` Regular, `var(--muted-foreground)`
-- Row separator: `var(--border-subtle)` 1px
+Compact label/value pairs inside a card, separated by hairlines.
 
-### 13.2 Transaction Row
-
-- Positive (credit): `var(--text-base)` SemiBold, `var(--success)` — prefix `+`
-- Negative (debit): `var(--text-base)` SemiBold, `var(--foreground)` — prefix `-`
-
-### 13.3 File Upload Item
-
-- Leading: file type icon
-- Uploading: `var(--primary)` progress bar along bottom edge
-- Error: `var(--destructive)` border
-- Complete: trailing trash icon
+**Row anatomy:**
+- Label — `13px` + `var(--font-weight-regular)` · `var(--muted-foreground)` · uppercase
+- Value — `var(--text-base)` + `var(--font-weight-semibold)` · `var(--foreground)`
+- Divider — 1px `var(--border-subtle)` · full width (omit after last row)
 
 ---
 
-## 14. Selection Controls
+## 10. Lists & Rows
 
-### 14.1 Switch — `🍏 iOS 26+/ Switch`
+### 10.1 Standard List Row
+
+**Anatomy:**
+- **Leading** — `🍏 Avatar` (circular) or Emblem (squircle) · 40×40pt
+- **Content** — stacked Title + Subtitle
+  - Title: `var(--text-base)` + `var(--font-weight-semibold)` · `var(--foreground)`
+  - Subtitle: `var(--text-label)` + `var(--font-weight-regular)` · `var(--muted-foreground)`
+- **Trailing** — chevron `›` · `var(--muted-foreground)`
+- **Separator** — 1px `var(--border-subtle)` left-inset to align with title (not full-bleed)
+- **Press state** — background → `var(--card-hover)` · `150ms ease-in-out`
+
+### 10.2 Transaction Row
+
+Extends the standard list row with a right-side amount column.
+
+**Trailing amount:**
+- Credit (positive): `var(--text-base)` + `var(--font-weight-semibold)` · `var(--success)` · prefix `+`
+- Debit (negative): `var(--text-base)` + `var(--font-weight-semibold)` · `var(--foreground)` · prefix `−`
+- Sub-label (date/status): `var(--text-label)` + `var(--font-weight-regular)` · `var(--muted-foreground)`
+
+### 10.3 File Upload Row
+
+**Anatomy:**
+- **Leading** — file type icon on `var(--accent)` squircle background
+- **Content** — file name (`var(--text-base)` + semibold) + file size (`var(--text-label)` + `var(--muted-foreground)`)
+
+**States:**
+- **Uploading** — `var(--primary)` progress bar along bottom edge of row
+- **Complete** — trailing trash icon · `var(--muted-foreground)`
+- **Error** — full row border → `var(--destructive)` · trailing error icon
+
+---
+
+## 11. Selection Controls
+
+### 11.1 Switch — `🍏 iOS 26+/ Switch`
 
 **Component**: `🍏 iOS 26+/ Switch`
 
-| Prop       | Type    | Default | Options         |
-|------------|---------|---------|-----------------|
-| `Selected` | Variant | `On`    | `On`, `Off`     |
-| `Disabled` | Variant | `False` | `False`, `True` |
+**Variants:**
 
-- **On**: Track `var(--primary)`, white knob
-- **Off**: Track `var(--muted)`, white knob
-- **Disabled**: Reduced opacity; transition `250ms ease-out`
+| Prop       | Options         | Default |
+|------------|-----------------|---------|
+| `Selected` | `On`, `Off`     | `On`    |
+| `Disabled` | `False`, `True` | `False` |
 
-### 14.2 Checkbox — `🍏 Checkbox`
+**Anatomy:**
+- Track: 51×31pt pill
+- Knob: white circle · slides left (Off) or right (On) · `250ms ease-out`
 
-- Unchecked: `var(--border)` outline, transparent fill
-- Checked: `var(--primary)` fill, white checkmark
-- Disabled: `var(--muted)` fill
+**Visual states:**
 
-### 14.3 Chip — `🍏 Chip`
+| Variant         | Track                    | Knob              |
+|-----------------|--------------------------|-------------------|
+| On, enabled     | `var(--primary)`         | white             |
+| Off, enabled    | `var(--muted)`           | white             |
+| On, disabled    | `var(--primary)` at 50%  | white at 50%      |
+| Off, disabled   | `var(--muted)` at 50%    | white at 50%      |
+
+### 11.2 Checkbox — `🍏 Checkbox`
+
+**Anatomy:**
+- Box: 20×20pt · `var(--radius-sm)` corners
+
+**States:**
+
+| State     | Fill                  | Border              | Icon             |
+|-----------|-----------------------|---------------------|------------------|
+| Unchecked | transparent           | `var(--border)`     | —                |
+| Checked   | `var(--primary)`      | `var(--primary)`    | white checkmark  |
+| Indeterminate | `var(--primary)` | `var(--primary)`    | white dash       |
+| Disabled  | `var(--muted)`        | `var(--border-subtle)` | —             |
+
+### 11.3 Chip — `🍏 Chip`
 
 **Component**: `🍏 Chip`
 
-- Corner radius: `var(--radius-button)` → pill
-- **Outline style**: `var(--border)` stroke, `var(--card)` fill, `var(--foreground)` text
-- **Solid style**: `var(--accent)` fill, `var(--accent-foreground)` text
-- Label: `var(--text-label)` SemiBold
-- Optional leading icon (24×24) + trailing `×` dismiss icon
+**Props:**
+
+| Prop        | Type          | Default   | Options                      |
+|-------------|---------------|-----------|------------------------------|
+| `label`     | Text          | `Label`   | —                            |
+| `has icon`  | Boolean       | `false`   | —                            |
+| `icon`      | Instance Swap | —         | 16×16 leading icon           |
+| `dismissible` | Boolean    | `true`    | Shows trailing `×`           |
+| `style`     | Variant       | `outline` | `outline`, `solid`           |
+
+**Styles:**
+
+| Style   | Fill             | Border           | Text                          |
+|---------|------------------|------------------|-------------------------------|
+| Outline | `var(--card)`    | `var(--border)`  | `var(--foreground)`           |
+| Solid   | `var(--accent)`  | none             | `var(--accent-foreground)`    |
+
+- Shape: `var(--radius-button)` — full pill
+- Label: `var(--text-label)` + `var(--font-weight-semibold)`
+- Trailing `×`: `var(--muted-foreground)` · hover `var(--foreground)`
 
 ---
 
-## 15. Indicators & Display
+## 12. Indicators & Display
 
-### 15.1 Avatars — `🍏 Avatar`
+### 12.1 Avatars — `🍏 Avatar`
 
-- Shape: Circle
-- Sizes: S (24px) → M (32px) → L (40px) → XL (56px)
-- Initial avatar: `var(--accent)` background, `var(--accent-foreground)` text
+**Shape**: Circle
 
-### 15.2 Emblems
+**Sizes:**
 
-- Soft rounded-square (squircle) background with a solid icon
-- Background: `var(--accent)`, icon: `var(--primary)`
+| Size | Diameter |
+|------|----------|
+| S    | 24px     |
+| M    | 32px     |
+| L    | 40px     |
+| XL   | 56px     |
 
-### 15.3 Badges
+**Content variants:**
+- **Initial** — 1–2 character initials · `var(--accent)` background · `var(--accent-foreground)` text
+- **Icon** — generic person icon · `var(--muted)` background · `var(--muted-foreground)` icon
+- **Photo** — user-supplied image, cropped to circle
 
-| Variant | Background                  | Text                        |
-|---------|-----------------------------|-----------------------------|
-| Warning | `var(--warning-subtle)`     | `var(--warning)`            |
-| Danger  | `var(--destructive-subtle)` | `var(--destructive)`        |
-| Success | `var(--success-subtle)`     | `var(--success)`            |
-| Info    | `var(--accent)`             | `var(--accent-foreground)`  |
-| Neutral | `var(--muted)`              | `var(--muted-foreground)`   |
+### 12.2 Emblems
 
-- Radius: `var(--radius)` → 8px · Padding: 4px vertical, 12px horizontal
-- Font: `var(--text-label)` Regular
+Squircle (rounded-square) container with a solid icon inside. Used for financial accounts, contacts, and categories.
 
-### 15.4 Text Status Indicators
+- Background: `var(--accent)`
+- Icon: `var(--primary)` · 24×24pt centered
+- Sizes match Avatar size scale
 
-Inline labels with leading icon: `INACTIVE`, `LOCKED`, `CANCELLED`, `BLOCKED`, `EXPIRED`
+### 12.3 Badges
 
-- Font: `13px` SemiBold · Colors: match badge variant above
+Compact status pills. **Not** interactive.
 
-### 15.5 Context Menus (iOS 26)
+| Variant | Background                  | Text Color          |
+|---------|-----------------------------|---------------------|
+| Warning | `var(--warning-subtle)`     | `var(--warning)`    |
+| Danger  | `var(--destructive-subtle)` | `var(--destructive)`|
+| Success | `var(--success-subtle)`     | `var(--success)`    |
+| Info    | `var(--accent)`             | `var(--accent-foreground)` |
+| Neutral | `var(--muted)`              | `var(--muted-foreground)` |
 
-- Long-press: scale target to `1.05`, background blurs (Liquid Glass §1.1)
-- Floating action list appears above/below
+- Radius: `var(--radius)` — rounded rectangle
+- Padding: `4px` vertical · `12px` horizontal
+- Font: `var(--text-label)` + `var(--font-weight-regular)`
 
----
+### 12.4 Text Status Indicators
 
-## 16. Feedback & Empty States
+Inline, non-pill status labels used in list rows and detail screens.
 
-### 16.1 Spinners — `🍏 Activity Indicator`
+`INACTIVE` · `LOCKED` · `CANCELLED` · `BLOCKED` · `EXPIRED`
 
-- iOS rotating multi-spoke wheel
-- Color: `var(--primary)` / `var(--primary-foreground)` on colored backgrounds
+- Leading dot or icon · text right of icon
+- Font: `13px` + `var(--font-weight-semibold)`
+- Color: matches badge variant (Neutral → INACTIVE, Danger → BLOCKED/CANCELLED, etc.)
 
-### 16.2 Shimmer / Skeleton Loaders
+### 12.5 Context Menus (iOS 26)
 
-- Base: `var(--muted)` shaped to destination content
-- Animation: left-to-right gradient sweep
+Triggered by long-press on any interactive element.
 
-### 16.3 Inline Alert Banners
-
-- Card layout with `var(--elevation-sm)`
-- Background: semantic subtle variant (e.g., `var(--warning-subtle)`)
-- Separator: `var(--border-subtle)` 1px
-- Action link: `var(--text-label)` SemiBold, `var(--primary)`
-
-### 16.4 Full-Page Empty States
-
-- Layout: vertically centered, full-screen
-- Anatomy (top → bottom):
-  1. Large 3D illustration
-  2. Title: `var(--text-h3)` Bold, `var(--foreground)`
-  3. Subtitle: `var(--text-base)` Regular, `var(--muted-foreground)`
-  4. Primary pill button (§10.1)
-
----
-
-## 17. Quick Reference — Component Mapping
-
-| Use Case              | Component                          |
-|-----------------------|------------------------------------|
-| Page header with tabs | `🍏 Tab Header`                    |
-| Navigation stack      | `🍏 Navigation Controller`         |
-| Bottom tab navigation | `🍏  iOS26+/Tab Bar`               |
-| Segmented filter      | `🍏 Segmented Control`             |
-| Icon-only button      | `🍏 Icon Button`                   |
-| Text link             | `🍏 Link`                          |
-| Search field          | `🍏 Search Bar / Standalone`       |
-| Multi-line text input | `🍏 Text Area`                     |
-| Phone number input    | `🍏 Input Phone`                   |
-| Password input        | `🍏 Input Password`                |
-| Date picker input     | `🍏 Input Date`                    |
-| Currency / amount     | `🍏 Input Amount`                  |
-| Payment card display  | `🍏 Payment Card`                  |
-| Toggle on/off         | `🍏 iOS 26+/ Switch`               |
-| Tag / filter chip     | `🍏 Chip`                          |
-| User avatar           | `🍏 Avatar`                        |
-| Loading spinner       | `🍏 Activity Indicator`            |
-| Text cursor           | `🍏 Cursor`                        |
+**Behavior:**
+1. Target element scales to `transform: scale(1.05)` — `150ms ease-in-out`
+2. Surrounding content blurs (Liquid Glass, §1.1) to visually isolate the target
+3. Floating action sheet appears above or below the target
+4. Each action item: leading icon + label · `var(--text-base)` · `var(--foreground)`
+5. Destructive actions: `var(--destructive)`
+6. Dismiss: tap outside or swipe down
 
 ---
 
-## 18. Global Do / Don't
+## 13. Feedback & Empty States
+
+### 13.1 Activity Indicator — `🍏 Activity Indicator`
+
+iOS-style rotating multi-spoke wheel (8 spokes at 45° intervals).
+
+- Default color: `var(--primary)`
+- On colored backgrounds: `var(--primary-foreground)`
+- Animation: continuous clockwise rotation
+- Sizes: 20×20 (inline) · 24×24 (standard) · 32×32 (full-screen)
+
+### 13.2 Shimmer / Skeleton Loaders
+
+Used during data fetching before content is available.
+
+- **Shape** — matches the destination element's dimensions and radius exactly
+- **Base color** — `var(--muted)`
+- **Animation** — left-to-right gradient sweep (`var(--card)` highlight) · `1500ms` loop
+- **Usage** — replace text lines, avatars, card content; never show a spinner and a skeleton simultaneously
+
+### 13.3 Inline Alert Banners
+
+**Anatomy:**
+- Container: card layout · `var(--elevation-sm)` · `var(--radius-card)` corners
+- Background: semantic subtle variant (e.g. `var(--warning-subtle)` for warnings)
+- Top section: leading semantic icon + title (`var(--text-base)` + semibold) + optional body text
+- Bottom section (optional): separated by 1px `var(--border-subtle)` · contains text action link (`var(--text-label)` + semibold · `var(--primary)`)
+
+### 13.4 Full-Page Empty States
+
+Used when a screen has no data: No Internet, No Transactions, Success, Error.
+
+**Anatomy (vertically centered, full-screen):**
+
+1. **Illustration** — large 3D or flat art · 200–280px width
+2. **Title** — `var(--text-h3)` + `var(--font-weight-bold)` · `var(--foreground)` · centered
+3. **Subtitle** — `var(--text-base)` + `var(--font-weight-regular)` · `var(--muted-foreground)` · centered · max 2 lines
+4. **Primary action** — pill button (§7.1 Primary style) · optional
+5. **Secondary action** — text link (§7.3) · below primary button · optional
+
+---
+
+## 14. Quick Reference — Component Mapping
+
+| Use Case               | Component Name                  |
+|------------------------|---------------------------------|
+| Page header with tabs  | `🍏 Tab Header`                 |
+| Navigation stack       | `🍏 Navigation Controller`      |
+| Bottom tab bar         | `🍏  iOS26+/Tab Bar`            |
+| Segmented filter tabs  | `🍏 Segmented Control`          |
+| Icon-only action       | `🍏 Icon Button`                |
+| Text / link action     | `🍏 Link`                       |
+| Search field           | `🍏 Search Bar / Standalone`    |
+| Multi-line text input  | `🍏 Text Area`                  |
+| Phone number input     | `🍏 Input Phone`                |
+| Password field         | `🍏 Input Password`             |
+| Date picker input      | `🍏 Input Date`                 |
+| Currency / amount      | `🍏 Input Amount`               |
+| Payment card display   | `🍏 Payment Card`               |
+| Toggle on/off          | `🍏 iOS 26+/ Switch`            |
+| Tag / filter chip      | `🍏 Chip`                       |
+| User avatar            | `🍏 Avatar`                     |
+| Loading spinner        | `🍏 Activity Indicator`         |
+| Text cursor            | `🍏 Cursor`                     |
+
+---
+
+## 15. Global Do / Don't
 
 **Do:**
-- Reference `🍏` components by their exact name
-- Apply variants through component properties only
-- Use `var(--...)` for all color, typography, and spacing values
-- Apply Liquid Glass to all floating / sticky elements
-- Support all defined states (default, focus, error, disabled) in every interactive component
-- Use `var(--sidebar-foreground)` for helper and placeholder text
+- Reference every `🍏` component by its **exact** name from the library
+- Apply variants and states exclusively through component properties
+- Use `var(--token)` for every color, font size, font weight, radius, and shadow — values live in `theme.css`
+- Apply Liquid Glass material (§1.1) to all floating and sticky elements
+- Implement **all** defined states (default, hover, focus, error, disabled) for every interactive component
+- Respect 44×44pt minimum tap target size for all touch interactions
+- Use `var(--sidebar-foreground)` for helper text and placeholder text
 
 **Don't:**
-- Detach library components or manually edit their internals
-- Hardcode `#hex` or `rgba()` values — always use a CSS variable
-- Use `#9747FF` — this is an internal Figma annotation color, not a production token
+- Hardcode any `#hex`, `rgb()`, `rgba()`, or raw `px` size that has a corresponding CSS variable in `theme.css`
+- Detach library components or manually edit their internal layers
+- Use `#9747FF` — it is an internal Figma annotation / template color, not a production token
+- Combine `var(--text-sm)` or `var(--text-xs)` — these variables do not exist in `theme.css`
 - Skip disabled or error states for interactive components
-- Use `--text-sm` or `--text-xs` — these do not exist in `theme.css`; use `--text-label` (15px) or literal `13px`
+- Mix Liquid Glass material with opaque solid backgrounds on the same floating layer
